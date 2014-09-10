@@ -12,7 +12,7 @@ args = vars(ap.parse_args())
 
 # Load the image and display it
 input_image = cv2.imread(args["image"])
-cv2.imshow("input_image", input_image)
+# cv2.imshow("input_image", input_image)
 
 # # Convert the image to the L*a*b* color spaces
 lab_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2LAB)
@@ -25,14 +25,14 @@ B_channel,G_channel,R_channel = cv2.split(input_image)
 H_channel,S_channel,hsB_channel = cv2.split(hsb_image)
 # cv2.imshow("L",l_channel)
 # cv2.imshow("a",a_channel)
-cv2.imshow("b",b_channel)
-cv2.imshow("R",R_channel)
-cv2.imshow("B",B_channel)
-cv2.imshow("G",G_channel)
+# cv2.imshow("b",b_channel)
+# cv2.imshow("R",R_channel)
+# cv2.imshow("B",B_channel)
+# cv2.imshow("G",G_channel)
 
-cv2.imshow("H",R_channel)
+# cv2.imshow("H",R_channel)
 cv2.imshow("S",S_channel)
-cv2.imshow("B",hsB_channel)
+# cv2.imshow("B",hsB_channel)
 # Print the minimum and maximum of lightness.
 # print np.min(l_channel) # 0
 # print np.max(l_channel) # 244
@@ -45,12 +45,12 @@ cv2.imshow("B",hsB_channel)
 # print np.median(a_channel)
 
 # Print the minimum and maximum of b.
-print np.min(b_channel) # 108
-print np.max(b_channel) # 220
-print np.mean(b_channel)
-print np.median(b_channel)
+# print np.min(b_channel) # 108
+# print np.max(b_channel) # 220
+# print np.mean(b_channel)
+# print np.median(b_channel)
 
-hist = cv2.calcHist([B_channel], [0], None, [256], [0, 256])
+hist = cv2.calcHist([S_channel], [0], None, [256], [0, 256])
 # Plot the histogram
 plt.figure()
 plt.title("Grayscale Histogram")
@@ -63,10 +63,15 @@ cv2.waitKey(0)
 
 
 # # # # #define boundry
-(T, thresh_image) = cv2.threshold(B_channel, 45, 50, cv2.THRESH_BINARY)
+S_channel = cv2.GaussianBlur(S_channel,(5,5),0)
+cv2.imshow("S channel", S_channel)
+thresh = cv2.adaptiveThreshold(S_channel,255,1,1,11,2)
+cv2.imshow("S channel thresh", thresh)
+
+(T, thresh_image) = cv2.threshold(S_channel, 90, 255, cv2.THRESH_BINARY)
 cv2.imshow("Threshold Binary", thresh_image)
 print np.min(thresh_image)
-canny_image = cv2.Canny(thresh_image, 135, 150)
+canny_image = cv2.Canny(thresh_image, 51, 65)
 cv2.imshow("Canny", canny_image)
 
 
