@@ -41,14 +41,14 @@ print np.mean(b_channel)
 print np.median(b_channel)
 
 # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-gray = cv2.bilateralFilter(b_channel, 11, 17, 17)
-edged = cv2.Canny(gray, 30, 200)
-cv2.imshow("gray", gray)
-cv2.imshow("edged", edged)
+# gray = cv2.bilateralFilter(b_channel, 11, 17, 17)
+# edged = cv2.Canny(gray, 30, 200)
+# cv2.imshow("gray", gray)
+# cv2.imshow("edged", edged)
 
-th3 = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv2.THRESH_BINARY,11,2)
-cv2.imshow("gaussian", th3)
+# th3 = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+#             cv2.THRESH_BINARY,11,2)
+# cv2.imshow("gaussian", th3)
 
 # # # # #define boundry
 # (T, thresh_image) = cv2.threshold(a_channel, 110, 130, cv2.THRESH_BINARY)
@@ -59,21 +59,21 @@ cv2.imshow("gaussian", th3)
 
 # find contours in the edged image, keep only the largest
 # ones, and initialize our screen contour
-(cnts, _) = cv2.findContours(th3.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-# cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:10]
-screenCnt = None
+# (cnts, _) = cv2.findContours(th3.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# # cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:10]
+# screenCnt = None
 
-# loop over our contours
-for c in cnts:
-	# approximate the contour
-	peri = cv2.arcLength(c, True)
-	approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+# # loop over our contours
+# for c in cnts:
+# 	# approximate the contour
+# 	peri = cv2.arcLength(c, True)
+# 	approx = cv2.approxPolyDP(c, 0.02 * peri, True)
 
-	# if our approximated contour has four points, then
-	# we can assume that we have found our screen
-	if len(approx) == 4:
-		screenCnt = approx
-		break
+# 	# if our approximated contour has four points, then
+# 	# we can assume that we have found our screen
+# 	if len(approx) == 4:
+# 		screenCnt = approx
+# 		break
 
 # draw a rectangle around the screen
 orig = input_image.copy()
