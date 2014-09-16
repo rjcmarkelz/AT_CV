@@ -23,11 +23,12 @@ blur = cv2.bilateralFilter(S_channel,9,100,100)
 canny_image = cv2.Canny(thresh_image, 100, 200, apertureSize = 3)
 # cv2.imshow("Canny", canny_image)
 
-kernel = np.ones((5,5),np.uint8)
-dilation = cv2.dilate(canny_image,kernel,iterations = 2)
+kernel = np.ones((10,10),np.uint8)
+dilation = cv2.dilate(canny_image,kernel,iterations = 1)
 cv2.imshow("Canny dilation", dilation)
 
 lines = cv2.HoughLines(dilation,1,np.pi/180,200)
+
 # print lines
 input_copy1 = input_image.copy()
 input_copy2 = input_image.copy()
@@ -44,16 +45,18 @@ for rho,theta in lines[0]:
     cv2.line(input_copy1,(x1,y1),(x2,y2),(0,0,255),2)
 cv2.imshow("input_copy1",input_copy1)
 
-minLineLength = 4000
-maxLineGap = 50
+minLineLength = 10000
+maxLineGap = 100
 lines = cv2.HoughLinesP(dilation,1,np.pi/180,100,minLineLength,maxLineGap)
+print lines
 for x1,y1,x2,y2 in lines[0]:
     cv2.line(input_copy2,(x1,y1),(x2,y2),(0,255,0),2)
+cv2.line(input_copy2,(5,70),(11,384),(0,0,255),2)
 cv2.imshow("input_copy2",input_copy2)
 
 # cv2.imwrite('houghlines.jpg',in)
 
-cv2.imwrite('houghlinesP.jpg',input_copy2)
+# cv2.imwrite('houghlinesP.jpg',input_copy2)
 
 
 cv2.waitKey(0)
