@@ -29,6 +29,9 @@ cv2.imshow("Canny dilation", dilation)
 
 lines = cv2.HoughLines(dilation,1,np.pi/180,200)
 # print lines
+input_copy1 = input_image.copy()
+input_copy2 = input_image.copy()
+
 for rho,theta in lines[0]:
     a = np.cos(theta)
     b = np.sin(theta)
@@ -38,8 +41,19 @@ for rho,theta in lines[0]:
     y1 = int(y0 + 1000*(a))
     x2 = int(x0 - 1000*(-b))
     y2 = int(y0 - 1000*(a))
-    cv2.line(input_image,(x1,y1),(x2,y2),(0,0,255),2)
-cv2.imshow("input2",input_image)
+    cv2.line(input_copy1,(x1,y1),(x2,y2),(0,0,255),2)
+cv2.imshow("input_copy1",input_copy1)
 
-cv2.imwrite('houghlines3.jpg',input_image)
+minLineLength = 2000
+maxLineGap = 100
+lines = cv2.HoughLinesP(dilation,1,np.pi/180,100,minLineLength,maxLineGap)
+for x1,y1,x2,y2 in lines[0]:
+    cv2.line(input_copy2,(x1,y1),(x2,y2),(0,255,0),2)
+cv2.imshow("input_copy2",input_copy2)
+
+# cv2.imwrite('houghlines.jpg',in)
+
+cv2.imwrite('houghlinesP.jpg',input_copy2)
+
+
 cv2.waitKey(0)
