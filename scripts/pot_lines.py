@@ -1,0 +1,45 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+import argparse
+
+# get some info from the user
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required = True,
+	help = "Path to the image")
+args = vars(ap.parse_args())
+# Load the image and display it
+input_image = cv2.imread(args["image"])
+
+hsb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
+H_channel,S_channel,hsB_channel = cv2.split(hsb_image)
+# cv2.imshow("S",S_channel)
+
+blur = cv2.bilateralFilter(S_channel,9,100,100)
+# cv2.imshow("blur", blur)
+
+(T, thresh_image) = cv2.threshold(blur, 100, 120, cv2.THRESH_BINARY)
+# cv2.imshow("Threshold Binary", thresh_image)
+canny_image = cv2.Canny(thresh_image, 100, 200, apertureSize = 3)
+# cv2.imshow("Canny", canny_image)
+
+kernel = np.ones((5,5),np.uint8)
+dilation = cv2.dilate(canny_image,kernel,iterations = 2)
+cv2.imshow("Canny dilation", dilation)
+
+lines = cv2.HoughLines(dilation,1,np.pi/180,200)
+# print lines
+for rho,theta in lines[0]:
+    a = np.cos(theta)
+    b = np.sin(theta)
+    x0 = a*rho
+    y0 = b*rho
+    x1 = int(x0 + 1000*(-b))
+    y1 = int(y0 + 1000*(a))
+    x2 = int(x0 - 1000*(-b))
+    y2 = int(y0 - 1000*(a))
+    cv2.line(input_image,(x1,y1),(x2,y2),(0,0,255),2)
+cv2.imshow("input2",input_image)
+
+cv2.imwrite('houghlines3.jpg',input_image)
+cv2.waitKey(0)

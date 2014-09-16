@@ -49,30 +49,80 @@ cv2.imshow("S",S_channel)
 # print np.mean(b_channel)
 # print np.median(b_channel)
 
-hist = cv2.calcHist([S_channel], [0], None, [256], [0, 256])
-# Plot the histogram
-plt.figure()
-plt.title("Grayscale Histogram")
-plt.xlabel("Bins")
-plt.ylabel("# of Pixels")
-plt.plot(hist)
-plt.xlim([0, 256])
-plt.show()
-cv2.waitKey(0)
+# hist = cv2.calcHist([S_channel], [0], None, [256], [0, 256])
+# # Plot the histogram
+# plt.figure()
+# plt.title("Grayscale Histogram")
+# plt.xlabel("Bins")
+# plt.ylabel("# of Pixels")
+# plt.plot(hist)
+# plt.xlim([0, 256])
+# plt.show()
+# cv2.waitKey(0)
 
 
 # # # # #define boundry
-S_channel = cv2.GaussianBlur(S_channel,(5,5),0)
-cv2.imshow("S channel", S_channel)
-thresh = cv2.adaptiveThreshold(S_channel,255,1,1,11,2)
-cv2.imshow("S channel thresh", thresh)
+# S_channel = cv2.GaussianBlur(S_channel,(5,5),0)
+# cv2.imshow("S channel", S_channel)
+# thresh = cv2.adaptiveThreshold(S_channel,255,1,1,11,2)
+# cv2.imshow("S channel thresh", thresh)
 
-(T, thresh_image) = cv2.threshold(S_channel, 90, 255, cv2.THRESH_BINARY)
+blur = cv2.bilateralFilter(S_channel,9,100,100)
+cv2.imshow("blur", blur)
+
+(T, thresh_image) = cv2.threshold(blur, 100, 120, cv2.THRESH_BINARY)
 cv2.imshow("Threshold Binary", thresh_image)
-print np.min(thresh_image)
-canny_image = cv2.Canny(thresh_image, 51, 65)
+canny_image = cv2.Canny(thresh_image, 100, 200, apertureSize = 3)
+#canny_image = cv2.Canny(thresh_image, 51, 65)
 cv2.imshow("Canny", canny_image)
 
+kernel = np.ones((5,5),np.uint8)
+dilation = cv2.dilate(canny_image,kernel,iterations = 1)
+cv2.imshow("Canny dilation", dilation)
+
+minLineLength = 100
+maxLineGap = 10
+lines = cv2.HoughLinesP(dilation,1,np.pi/180,100,minLineLength,maxLineGap)
+# print lines
+
+lineexample = lines[0]
+print lineexample
+# cv2.line(dilation,(x1,y1),(x2,y2),(0,255,0),2)
+# for x1,y1,x2,y2 in lines[0]:
+#     cv2.line(dilation,(x1,y1),(x2,y2),(0,255,0),2)
+# cv2.imwrite('houghlines5.jpg',dilation)
+
+# contours,hierarchy = cv2.findContours(thresh, 1, 2)
+# #print contours
+# cnt = contours[0]
+# area = cv2.contourArea(cnt)
+# perimeter = cv2.arcLength(cnt,True)
+
+# epsilon = 0.1*cv2.arcLength(cnt,True)
+# approx = cv2.approxPolyDP(cnt,epsilon,True)
+
+# find contours in the edged image, keep only the largest
+# ones, and initialize our screen contour
+# (cnts, _) = cv2.findContours(canny_image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:1]
+# screenCnt = None
+
+# # loop over our contours
+# for c in cnts:
+# 	# approximate the contour
+# 	peri = cv2.arcLength(c, False)
+# 	approx = cv2.approxPolyDP(c, 0.90 * peri, False)
+
+# 	# if our approximated contour has four points, then
+# 	# we can assume that we have found our screen
+# 	if len(approx) == 4:
+# 		screenCnt = approx
+# 		break
+
+# # draw a rectangle around the screen
+# orig = input_image.copy()
+# cv2.drawContours(input_image, [screenCnt], -1, (0, 255, 0), 3)
+# cv2.imshow("found countours", input_image)
 
 # lab = cv2.inRange(lab, lowerb = plant_min, upperb = plant_max)
 #cv2.imshow("Lab Filter", lab)
