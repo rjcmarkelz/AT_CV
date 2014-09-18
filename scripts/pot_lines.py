@@ -20,7 +20,7 @@ cv2.imshow("hsB",hsB_channel)
 hist = cv2.calcHist([S_channel], [0], None, [256], [0, 256])
 # Plot the histogram
 plt.figure()
-plt.title("Grayscale Histogram")
+plt.title("S Histogram")
 plt.xlabel("Bins")
 plt.ylabel("# of Pixels")
 plt.plot(hist)
