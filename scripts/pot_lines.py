@@ -17,6 +17,8 @@ H_channel,S_channel,hsB_channel = cv2.split(hsb_image)
 cv2.imshow("H",H_channel)
 # cv2.imshow("hsB",hsB_channel)
 
+
+
 # hist = cv2.calcHist([H_channel], [0], None, [256], [0, 256])
 # # Plot the histogram
 # plt.figure()
