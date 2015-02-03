@@ -17,13 +17,14 @@ ap.add_argument("-i", "--image", required = True,
 args = vars(ap.parse_args())
 # Load the image and display it
 input_image = cv2.imread(args["image"])
+height, width, depth = input_image.shape
 
 #convert image to HSV colorspace for pot detection
 hsb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
 H_channel,S_channel,hsB_channel = cv2.split(hsb_image)
-cv2.imshow("H",H_channel)
-cv2.imshow("S",S_channel)
-cv2.imshow("hsB",hsB_channel)
+# cv2.imshow("H",H_channel)
+# cv2.imshow("S",S_channel)
+# cv2.imshow("hsB",hsB_channel)
 
 # Convert original image to the L*a*b* color space for arabidopsis detection
 lab_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2LAB)
@@ -32,6 +33,12 @@ l_channel,a_channel,b_channel = cv2.split(lab_image)
 # cv2.imshow("a",a_channel) # focus on a channel because it provides best contrast for arabidopsis
 #cv2.imshow("b",b_channel)
 
+
+# canvas = np.zeros((300, 300, 3), dtype = "uint8")
+# green = (0, 255, 0)
+# cv2.line(canvas, (0, 0), (300, 300), green)
+# cv2.line("l_channel line", canvas)
+# cv2.waitKey(0)
 
 
 #########
@@ -83,20 +90,75 @@ canny_image = cv2.Canny(thresh_image, 100, 200, apertureSize = 3)
 # play with the size of the array and the number of iterations for various results
 kernel = np.ones((5,5), np.uint8)
 dilation = cv2.dilate(canny_image, kernel, iterations = 2)
-#cv2.imshow("Canny dilation", dilation)
+# cv2.imshow("Canny dilation", dilation)
 
 # # print lines
 input_copy2 = input_image.copy()
 
 # set parameters for HoughLinesP 
 # also play with these to get more or less numbers of lines
-minLineLength = 10000
+minLineLength = 100000
 maxLineGap = 40
 linesP = cv2.HoughLinesP(dilation, 1, np.pi/180, 100, minLineLength, maxLineGap)
 
 # extract endpoints and draw HoughLines
 for x1,y1,x2,y2 in linesP[0]:
     cv2.line(input_copy2,(x1,y1),(x2,y2), (0,255,0) ,2)
+
+# cv2.imshow("inputcopy2", input_copy2)
+
+canvas = np.zeros((height, width, 3), dtype = "uint8")
+test = input_image.copy()
+lines = cv2.HoughLines(dilation, 1, np.pi/180, 600)
+for rho, theta in lines[0]:
+	a = np.cos(theta)
+	b = np.sin(theta)
+	x0 = a*rho
+	y0 = b*rho
+	x1 = int(x0 + 1000*(-b))
+	y1 = int(y0 + 1000*(a))
+	x2 = int(x0 - 1000*(-b))
+	y2 = int(y0 - 1000*(a))
+
+	cv2.line(canvas, (x1, y1), (x2, y2), (255, 0, 0), 20)
+
+cv2.imshow("blended6", canvas)
+
+
+gray = cv2.cvtColor(canvas,cv2.COLOR_BGR2GRAY)
+dst5 = cv2.cornerHarris(gray,2,3,0.04)
+cv2.imshow("gray", gray)
+
+
+#result is dilated for marking the corners, not important
+dst5 = cv2.dilate(dst5, None)
+
+# Threshold for an optimal value, it may vary depending on the image.
+canvas[dst5>0.01*dst5.max()]=[0,0,255]
+
+cv2.imshow('dst5',canvas)
+if cv2.waitKey(0) & 0xff == 27:
+    cv2.destroyAllWindows()
+
+(cnts, _) = cv2.findContours(gray.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:10]
+screenCnt = None
+# loop over our contours
+for c in cnts:
+	peri = cv2.arcLength(c, True)
+	approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+	if len(approx) == 4:
+		screenCnt = approx
+		break
+
+cv2.drawContours(canvas, [approx], -1, (0, 255, 0), 3)
+cv2.imshow("Game Boy Screen", canvas)
+cv2.waitKey(0)
+ 
+# if our approximated contour has four points, then
+# we can assume that we have found our screen
+
+
 
 # print the lines and pick the end points of one of the lines to display in red
 # this helps to see how the lines are being found, uncomment next two lines to see
@@ -130,23 +192,24 @@ for x1,y1,x2,y2 in linesP[0]:
 
 # threshold image based on a_channel region that provides the most contrast
 (aT, a_thresh_image) = cv2.threshold(a_channel, 110, 130, cv2.THRESH_BINARY)
-cv2.imshow("a_channel Threshold Binary", a_thresh_image)
-cv2.imwrite('output.tif', a_thresh_image)
+# cv2.imshow("a_channel Threshold Binary", a_thresh_image)
+# cv2.imwrite('output.tif', a_thresh_image)
 
 #a_thresh_image2 = a_thresh_image.copy()
 # cv2.imshow("a_thresh_2",a_thresh_image2)
 
 a_thresh_image2 = cv2.imread("output.tif")
-cv2.imshow("a_channel Threshold Binary 2", a_thresh_image2)
+# cv2.imshow("a_channel Threshold Binary 2", a_thresh_image2)
 cv2.imwrite('threshold.tif', a_thresh_image)
 dst = cv2.addWeighted(a_thresh_image2,0.95, input_image,0.95,0)
 
 dst2 = dst.copy()
+
 for x1,y1,x2,y2 in linesP[0]:
     cv2.line(dst2,(x1,y1),(x2,y2), (255,0,0) ,2)
 
-cv2.imshow("blended", dst)
-cv2.imshow("blended2", dst2)
+# cv2.imshow("blended", dst)
+# cv2.imshow("blended2", dst2)
 
 cv2.waitKey(0)
 

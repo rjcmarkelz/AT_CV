@@ -21,16 +21,16 @@ input_image = cv2.imread(args["image"])
 #convert image to HSV colorspace for pot detection
 hsb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
 H_channel,S_channel,hsB_channel = cv2.split(hsb_image)
-cv2.imshow("H",H_channel)
-cv2.imshow("S",S_channel)
-cv2.imshow("hsB",hsB_channel)
+# cv2.imshow("H",H_channel)
+# cv2.imshow("S",S_channel)
+# cv2.imshow("hsB",hsB_channel)
 
 # Convert original image to the L*a*b* color space for arabidopsis detection
 lab_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2LAB)
 l_channel,a_channel,b_channel = cv2.split(lab_image)
-#cv2.imshow("L",l_channel)
+# cv2.imshow("L",l_channel)
 # cv2.imshow("a",a_channel) # focus on a channel because it provides best contrast for arabidopsis
-#cv2.imshow("b",b_channel)
+# cv2.imshow("b",b_channel)
 
 
 
@@ -95,8 +95,8 @@ maxLineGap = 40
 linesP = cv2.HoughLinesP(dilation, 1, np.pi/180, 100, minLineLength, maxLineGap)
 
 # extract endpoints and draw HoughLines
-for x1,y1,x2,y2 in linesP[0]:
-    cv2.line(input_copy2,(x1,y1),(x2,y2), (0,255,0) ,2)
+# for x1,y1,x2,y2 in linesP[0]:
+#     cv2.line(input_copy2,(x1,y1),(x2,y2), (0,255,0) ,2)
 
 # print the lines and pick the end points of one of the lines to display in red
 # this helps to see how the lines are being found, uncomment next two lines to see
@@ -129,24 +129,24 @@ for x1,y1,x2,y2 in linesP[0]:
 # cv2.waitKey(0)
 
 # threshold image based on a_channel region that provides the most contrast
-(aT, a_thresh_image) = cv2.threshold(a_channel, 110, 130, cv2.THRESH_BINARY)
-cv2.imshow("a_channel Threshold Binary", a_thresh_image)
-cv2.imwrite('output.tif', a_thresh_image)
+(aT, S_thresh_image) = cv2.threshold(S_channel, 110, 130, cv2.THRESH_BINARY)
+# cv2.imshow("S_channel Threshold Binary", S_thresh_image)
+cv2.imwrite('output.tif', S_thresh_image)
 
 #a_thresh_image2 = a_thresh_image.copy()
 # cv2.imshow("a_thresh_2",a_thresh_image2)
 
-a_thresh_image2 = cv2.imread("output.tif")
-cv2.imshow("a_channel Threshold Binary 2", a_thresh_image2)
-cv2.imwrite('threshold.tif', a_thresh_image)
-dst = cv2.addWeighted(a_thresh_image2,0.95, input_image,0.95,0)
+# a_thresh_image2 = cv2.imread("output.tif")
+# cv2.imshow("a_channel Threshold Binary 2", a_thresh_image2)
+# cv2.imwrite('threshold.tif', a_thresh_image)
+# dst = cv2.addWeighted(a_thresh_image2,0.95, input_image,0.95,0)
 
-dst2 = dst.copy()
-for x1,y1,x2,y2 in linesP[0]:
-    cv2.line(dst2,(x1,y1),(x2,y2), (255,0,0) ,2)
+# dst2 = dst.copy()
+# for x1,y1,x2,y2 in linesP[0]:
+#     cv2.line(dst2,(x1,y1),(x2,y2), (255,0,0) ,2)
 
-cv2.imshow("blended", dst)
-cv2.imshow("blended2", dst2)
+# cv2.imshow("blended", dst)
+# cv2.imshow("blended2", dst2)
 
 cv2.waitKey(0)
 
