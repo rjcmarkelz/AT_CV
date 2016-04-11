@@ -3,6 +3,10 @@
 # September 18, 2014
 # markelz@gmail.com
 # github, twitter, bitbucket: rjcmarkelz
+<<<<<<< HEAD
+=======
+# GPL license- Keep it open. 
+>>>>>>> develop
 #########
 
 import cv2
