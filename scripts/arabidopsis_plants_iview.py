@@ -36,8 +36,21 @@ no_black = cv2.countNonZero(dst)
 black_pixels = a_thresh_image.size - no_black
 # print('The number of black pixels is: ' + str(no_black))
 # print(a_thresh_image.size - str(no_black))
-# print(args["image"] + str(black_pixels))
-print(args["image"] + str(black_pixels))
+print(args["image"] + "," + str(black_pixels))
+
+
+#
+# ifile  = open('test.csv', "rb")
+# reader = csv.reader(ifile)
+# ofile  = open('ttest.csv', "wb")
+# writer = csv.writer(ofile, delimiter='	', quotechar='"', quoting=csv.QUOTE_ALL)
+#
+# for row in reader:
+#     writer.writerow(row)
+#
+# ifile.close()
+# ofile.close()
+# print(str(black_pixels))
 
 # cv2.waitKey(0)
 
