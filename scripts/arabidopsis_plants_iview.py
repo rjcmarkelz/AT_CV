@@ -36,7 +36,9 @@ no_black = cv2.countNonZero(dst)
 black_pixels = a_thresh_image.size - no_black
 # print('The number of black pixels is: ' + str(no_black))
 # print(a_thresh_image.size - str(no_black))
+# print(args["image"] + str(black_pixels))
 print(args["image"] + str(black_pixels))
+
 # cv2.waitKey(0)
 
 # END SCRIPT
